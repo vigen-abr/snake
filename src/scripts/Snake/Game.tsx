@@ -44,16 +44,14 @@ class Game extends React.Component<props> {
     }
 
     render() {
-        return [
-            <div key="2" className={`game-wrapper ${this.state.gameOver ? 'game-wrapper--game-over' : ''}`}
+        return (<div className={`game-wrapper ${this.state.gameOver ? 'game-wrapper--game-over' : ''}`}
                  style={{width: `${AREA_SIZE}px`, height: `${AREA_SIZE}px`}}>
-                {this.state.targets.length}
                 {this.state.pixels.map((px: pixelObject, idx: number) => <Pixel key={idx} size={PIXEL_SIZE} top={px.top}
                                                                                 left={px.left}/>)}
                 {this.state.targets.map((tg: targetObject, idx: number) => <TargetPixel key={idx} size={PIXEL_SIZE}
                                                                                         top={tg.top} left={tg.left}/>)}
             </div>
-        ];
+        );
     }
 
     handleKeyDown(event: KeyboardEvent): void {
