@@ -2,6 +2,7 @@ import * as React from 'react';
 import './Game.scss';
 import Pixel from './components/Pixel/Pixel';
 import TargetPixel from './components/TargetPixel/TargetPixel';
+import Complexity from './components/Complexity/Complexity';
 import {createPixel, createTarget} from './helpers/dataObjects';
 import {pixelObject, targetObject} from "../../typings/Snake/helpers/dataObjects.d";
 
@@ -30,6 +31,8 @@ class Game extends React.Component<props> {
     private moveIntervalId: number | undefined;
     private targetsIntervalId: number | undefined;
     private ongoingDirection: { correct: DIRECTION, reverse: DIRECTION } | undefined;
+    private loopCounter: number = 0;
+    private complexity: number = 1; //from 1 to 10
 
     constructor(props: props) {
         super(props);
@@ -44,14 +47,15 @@ class Game extends React.Component<props> {
     }
 
     render() {
-        return (<div className={`game-wrapper ${this.state.gameOver ? 'game-wrapper--game-over' : ''}`}
-                 style={{width: `${AREA_SIZE}px`, height: `${AREA_SIZE}px`}}>
+        return [<div className={`game-wrapper ${this.state.gameOver ? 'game-wrapper--game-over' : ''}`}
+                     style={{width: `${AREA_SIZE}px`, height: `${AREA_SIZE}px`}}>
                 {this.state.pixels.map((px: pixelObject, idx: number) => <Pixel key={idx} size={PIXEL_SIZE} top={px.top}
                                                                                 left={px.left}/>)}
                 {this.state.targets.map((tg: targetObject, idx: number) => <TargetPixel key={idx} size={PIXEL_SIZE}
                                                                                         top={tg.top} left={tg.left}/>)}
-            </div>
-        );
+            </div>,
+            <Complexity/>
+        ];
     }
 
     handleKeyDown(event: KeyboardEvent): void {
@@ -143,12 +147,16 @@ class Game extends React.Component<props> {
             const hitTargetIndex = this._hitTheTarget(headPixel);
             if (hitTargetIndex >= 0) {
                 this.onTargetHit(hitTargetIndex);
-
+                this._appendPixelToEnd(res.pixels)
             }
         }
         this.setState({pixels: res.pixels})
+    }
 
-
+    _appendPixelToEnd(pixels: pixelObject[]):void {
+        //just append the old last pixel into updated pixels (same position)
+        const oldLastPixel = this.state.pixels[this.state.pixels.length - 1];
+        pixels.push(createPixel(PIXEL_SIZE, oldLastPixel));
     }
 
     onTargetHit(targetIndex: number) {
@@ -218,9 +226,15 @@ class Game extends React.Component<props> {
 
     setIntervals() {
         this.moveIntervalId = window.setInterval(() => {
+            this.loopCounter++;
+            if(this.loopCounter % (10 - this.complexity) !== 0){
+                return
+            }
             this._updateDirection();
             this._updatePixelPositions();
-        }, 300);//todo add complexity
+        }, 50);//todo add complexity
+
+
         this.targetsIntervalId = window.setInterval(() => {
             if (this.needsTarget) {
                 this.setState({targets: [...this.state.targets, this._generateValidTarget()]})
@@ -230,7 +244,6 @@ class Game extends React.Component<props> {
 
     _generateValidTarget(): targetObject {
         const target = createTarget(PIXEL_SIZE, AREA_SIZE);
-        console.log(target);
         if (!this._isValidTarget(target)) {
             return this._generateValidTarget()
         }
