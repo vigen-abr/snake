@@ -4,18 +4,18 @@ let initialLeft = 0;
 let initialPixelIndex = 0;
 let initialTargetIndex = 0;
 
-export function createPixel(size: number): pixelObject {
+export function createPixel(size: number, origin?: pixelObject): pixelObject {
     return {
-        top: 0,
-        left: initialLeft += size,
+        top: origin ? origin.top : 0,
+        left: origin ? origin.left : initialLeft += size,
         _index: ++initialPixelIndex
     }
 }
 
 export function createTarget(size: number, areaSize: number): targetObject {
     return {
-        top: getRandomInt(0, areaSize/size - 1) * size,
-        left: getRandomInt(0, areaSize/size - 1) * size,
+        top: getRandomInt(0, areaSize / size - 1) * size,
+        left: getRandomInt(0, areaSize / size - 1) * size,
         _index: ++initialTargetIndex
     }
 }
