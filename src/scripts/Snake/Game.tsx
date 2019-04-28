@@ -28,8 +28,11 @@ interface state {
 
 class Game extends React.Component<props> {
     public state: state;
+
     private moveIntervalId: number | undefined;
     private targetsIntervalId: number | undefined;
+    private complexityIntervalId: number | undefined;
+
     private ongoingDirection: { correct: DIRECTION, reverse: DIRECTION } | undefined;
     private loopCounter: number = 0;
     private complexity: number = 1; //from 1 to 10
@@ -240,6 +243,13 @@ class Game extends React.Component<props> {
                 this.setState({targets: [...this.state.targets, this._generateValidTarget()]})
             }
         }, 500)
+
+        this.complexityIntervalId = window.setInterval(() => {
+            this.complexity++;
+            if(this.complexity === 9){
+                clearInterval(this.complexityIntervalId)
+            }
+        }, 2000)
     }
 
     _generateValidTarget(): targetObject {
