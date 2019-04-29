@@ -1,7 +1,11 @@
 import React from 'react';
 import './Complexity.scss';
 
-function Complexity(props: any) {
+interface props {
+
+}
+
+function Complexity(props: props) {
   const style = {
 
   };
